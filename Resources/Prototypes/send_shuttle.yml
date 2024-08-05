@@ -1,0 +1,15 @@
+- type: sendShuttle
+  id: ERTBasic
+  sendAnnouncement: true
+  announcementText: shuttle-send-ert
+  announcementSender: BAKA
+  announcementColor: gold
+  isPlayAuidoFromAnnouncement: false
+  isPlayCustomAudio: true
+  soundAnnounce:
+    volume: 1
+    path: Audio/Announcements/attention.ogg
+  setAlertLevel: red
+  playAlertLevelSound: true
+  gridPath: /Maps/Shuttles/dart.yml
+  hintText: send-shuttle-hint-type-ertdefault
