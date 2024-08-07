@@ -1,0 +1,155 @@
+- type: entity
+  id: BaseMotionSensor
+  name: motion sensor
+  description: An motion sensor. It is triggered by movement in a certain area.
+  abstract: true
+  components:
+  - type: WallMount
+  - type: ApcPowerReceiver
+  - type: Electrified
+    enabled: false
+    usesApcPower: true
+  - type: EncryptionKeyHolder
+    keySlots: 1
+    keysExtractionMethod: Prying
+  - type: Speech
+    speechVerb: Robotic
+  - type: ExtensionCableReceiver
+  - type: Clickable
+  - type: InteractionOutline
+  - type: Appearance
+  - type: WiresVisuals
+  - type: WiresPanelSecurity
+  - type: WiresPanel
+  - type: ContainerFill
+    containers:
+      board: [ IntercomElectronics ]
+  - type: ContainerContainer
+    containers:
+      board: !type:Container
+      key_slots: !type:Container
+  - type: Sprite
+    noRot: false
+    drawdepth: SmallObjects
+    sprite: Structures/Wallmounts/motion_sensor.rsi
+    layers:
+    - state: base
+      map: ["enum.ProximityTriggerVisualLayers.Base"]
+    - state: unshaded
+      map: ["enum.PowerDeviceVisualLayers.Powered"]
+      shader: unshaded
+    - state: panel
+      map: ["enum.WiresVisualLayers.MaintenancePanel"]
+      visible: false
+  - type: Transform
+    noRot: false
+    anchored: true
+#  - type: Construction
+#   graph: Intercom
+#   node: intercom
+  - type: AnimationPlayer
+  - type: EmitSoundOnTrigger
+    sound:
+      path: /Audio/Weapons/flash.ogg
+  - type: FlashOnTrigger
+    range: 3
+  - type: TriggerOnProximity
+    enabled: true
+    cooldown: 5
+    shape:
+      !type:PhysShapeAabb
+            bounds: "-1,-5,1,0.4"
+    repeating: true
+  - type: DeviceLinkSink
+    ports:
+      - Trigger
+  - type: Damageable
+    damageContainer: Inorganic
+    damageModifierSet: Metallic
+  - type: Destructible
+    thresholds:
+      - trigger:
+          !type:DamageTrigger
+          damage: 200
+        behaviors:
+          - !type:DoActsBehavior
+            acts: [ "Destruction" ]
+      - trigger:
+          !type:DamageTrigger
+          damage: 100
+        behaviors:
+          - !type:DoActsBehavior
+            acts: [ "Destruction" ]
+          - !type:PlaySoundBehavior
+            sound:
+              collection: MetalGlassBreak
+              params:
+                volume: -4
+  - type: GenericVisualizer
+    visuals:
+      enum.WiresVisualLayers.MaintenancePanel:
+        enum.WiresVisualLayers.MaintenancePanel:
+          True: { visible: true }
+          False: { visible: false }
+      enum.PowerDeviceVisuals.Powered:
+        enum.PowerDeviceVisualLayers.Powered:
+          True: { visible: true }
+          False: { visible: false }
+  placement:
+    mode: SnapgridCenter
+    snap:
+    - Wallmount
+
+# this weird inheritance BS exists for construction shitcode
+- type: entity
+  id: MotionSensorConstructed
+  parent: BaseMotionSensor
+  suffix: Empty, Panel Open
+  components:
+  - type: Sprite
+    layers:
+    - state: base
+    - state: unshaded
+      map: ["enum.PowerDeviceVisualLayers.Powered"]
+      shader: unshaded
+    - state: panel
+      map: ["enum.WiresVisualLayers.MaintenancePanel"]
+      visible: true
+  - type: WiresPanel
+    open: true
+
+- type: entity
+  id: MotionSensor
+  parent: MotionSensorConstructed
+  suffix: ""
+  components:
+  - type: Sprite
+    layers:
+    - state: base
+    - state: unshaded
+      map: ["enum.PowerDeviceVisualLayers.Powered"]
+      shader: unshaded
+    - state: panel
+      map: ["enum.WiresVisualLayers.MaintenancePanel"]
+  - type: WiresPanel
+    open: false
+
+- type: entity
+  id: MotionSensorSecurity
+  parent: MotionSensor
+  suffix: Security
+  description: An motion sensor. It is triggered by movement in a certain area and sends a message to the security channel.
+  components:
+  - type: WiresPanel
+    openDelay: 5
+  - type: WiresPanelSecurity
+    examine: wires-panel-component-on-examine-security-level2
+    wiresAccessible: false
+#  - type: Construction
+#   node: intercomReinforced
+  - type: ContainerFill
+    containers:
+      board:
+      - IntercomElectronics
+      key_slots:
+      - EncryptionKeySecurity
